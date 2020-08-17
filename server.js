@@ -16,6 +16,7 @@ express()
   .use("/", express.static(__dirname + "/"))
 
   // exercise 1
+  .get("/exercise-1/users")
 
   // exercise 2
 
