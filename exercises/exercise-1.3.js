@@ -13,11 +13,16 @@ const getUsers = async (req, res) => {
 
   await client.connect();
 
-  const db = client.db(dbName);
+  const db = client.db("database_1");
   const users = await db.collection("users").find().toArray();
   console.log("users", users);
   client.close();
   console.log("disconnected!");
-};
 
-export default getUsers;
+  if (users.length) {
+    res.status(200).send(users);
+  } else {
+    res.status(404);
+  }
+};
+module.exports = { getUsers };
