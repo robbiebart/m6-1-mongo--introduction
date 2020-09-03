@@ -1,5 +1,8 @@
 const { MongoClient } = require("mongodb");
 const assert = require("assert");
+const { paginateModel } = require("./utils");
+
+// console.log("mongo client", MongoClient);
 
 require("dotenv").config();
 const { MONGO_URI } = process.env;
@@ -33,11 +36,12 @@ const createGreeting = async (req, res) => {
 };
 
 const getGreeting = async (req, res) => {
-  const _id = req.param._id;
+  // console.log("req.params", req.params);
+  const _id = req.params._id;
   const client = await MongoClient(MONGO_URI, options);
 
   await client.connect();
-  const db = client.db("exercises");
+  const db = client.db("exercise_1");
 
   db.collection("greetings").findOne({ _id }, (err, result) => {
     result
@@ -48,4 +52,51 @@ const getGreeting = async (req, res) => {
   // res.status(200).json("bacon");
 };
 
-module.exports = { createGreeting, getGreeting };
+const getGreetings = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+
+  await client.connect();
+  const db = client.db("exercise_1");
+  console.log("connected!");
+
+  const greetings = await db.collection("greetings").find().toArray();
+
+  const start = Number(req.query.start);
+  const limit = Number(req.query.limit);
+
+  const paginatedResult = paginateModel(greetings, start, limit);
+
+  client.close();
+  console.log("client closed!");
+
+  res.status(200).json({ status: 200, paginatedResult });
+};
+
+const deleteGreeting = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+  console.log("req.params.id", req.params._id);
+  try {
+    await client.connect();
+    const db = client.db("exercise_1");
+    console.log("connected!");
+
+    // await db.collection("greetings").insertOne(req.body);
+
+    const r = await db
+      .collection("greetings")
+      .deleteOne({ _id: req.params._id });
+    // assert.equal(1, r.deleteCount);
+
+    client.close();
+    console.log("disconnected!");
+    res.status(204).json({ status: 204, data: req.params });
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).json({ status: 500, data: req.params });
+  }
+
+  // console.log(req.body);
+  // res.status(200).json("ok");
+};
+
+module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting };

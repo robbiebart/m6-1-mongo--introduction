@@ -10,6 +10,7 @@ const options = {
 
 const getUsers = async (req, res) => {
   const client = await MongoClient(MONGO_URI, options);
+  console.log("client", client);
 
   await client.connect();
 

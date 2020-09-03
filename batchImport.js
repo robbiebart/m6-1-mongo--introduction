@@ -11,13 +11,14 @@ const options = {
 };
 
 const greetings = JSON.parse(fs.readFileSync("data/greetings.json"));
+console.log("greeting", greetings);
 
 const batchImport = async () => {
-  try {
-    const client = await MongoClient(MONGO_URI, options);
+  const client = await MongoClient(MONGO_URI, options);
 
+  try {
     await client.connect();
-    const db = client.db("exercises");
+    const db = client.db("exercise_1");
     console.log("connected!");
     console.log("greetings length", greetings.length);
 
