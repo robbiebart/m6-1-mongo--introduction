@@ -99,4 +99,38 @@ const deleteGreeting = async (req, res) => {
   // res.status(200).json("ok");
 };
 
-module.exports = { createGreeting, getGreeting, getGreetings, deleteGreeting };
+const updateGreeting = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+  console.log("req.params.id", req.params._id);
+  try {
+    await client.connect();
+    const db = client.db("exercise_1");
+    console.log("connected!");
+
+    const _id = req.params._id;
+    const newValues = { $set: { hello: req.body.hello } };
+
+    // await db.collection("greetings").insertOne(req.body);
+
+    const r = await db.collection("greetings").updateOne({ _id }, newValues);
+    // assert.equal(1, r.insertedCount);
+
+    console.log("req.body", req.body);
+    console.log("id", _id);
+
+    res.status(200).json({ status: 200, _id, ...req.body });
+  } catch (error) {
+    console.log("error", error);
+    res
+      .status(500)
+      .json({ status: 500, data: req.body.hello, message: err.message });
+  }
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  getGreetings,
+  deleteGreeting,
+  updateGreeting,
+};
