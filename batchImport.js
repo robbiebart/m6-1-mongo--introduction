@@ -23,11 +23,12 @@ const batchImport = async () => {
 
     const r = await db.collection("greetings").insertMany(greetings);
     assert.equal(greetings.length, r.insertedCount);
-
-    client.close();
-    console.log("disconnected!");
-  } catch (err){console.log("error", err)});
+  } catch (err) {
+    console.log("error", err);
+  }
   console.log("greetings", greetings);
+  client.close();
+  console.log("disconnected!");
 };
 
 batchImport();

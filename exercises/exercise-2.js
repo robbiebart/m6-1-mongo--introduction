@@ -10,9 +10,9 @@ const options = {
 };
 
 const createGreeting = async (req, res) => {
-  try {
-    const client = await MongoClient(MONGO_URI, options);
+  const client = await MongoClient(MONGO_URI, options);
 
+  try {
     await client.connect();
     const db = client.db("exercises");
     console.log("connected!");
@@ -22,13 +22,12 @@ const createGreeting = async (req, res) => {
     const r = await db.collection("greetings").insertOne(req.body);
     assert.equal(1, r.insertedCount);
 
-    client.close();
-    console.log("disconnected!");
-
     res.status(201).json({ status: 201, data: req.body });
   } catch {
     res.status(500).json({ status: 500, data: req.body, message: err.message });
   }
+  client.close();
+  console.log("disconnected!");
   // console.log(req.body);
   // res.status(200).json("ok");
 };
